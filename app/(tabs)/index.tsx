@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View,} from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, ToastAndroid } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
 
 export default function App() {
   const [password, setPassword] = useState('');
@@ -21,6 +22,11 @@ export default function App() {
     setPasswordLength(parsedLength);
   };
 
+  const handleCopyPassword = () => {
+    Clipboard.setStringAsync(password);
+    ToastAndroid.show('Password copied to clipboard', ToastAndroid.SHORT);
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Password Generator</Text>
@@ -37,7 +43,19 @@ export default function App() {
       <TouchableOpacity style={styles.button} onPress={generatePassword}>
         <Text style={styles.buttonText}>Generate Password</Text>
       </TouchableOpacity>
-      <Text style={styles.generatedPassword}>{password}</Text>
+      {password ? (
+        <>
+          <Text style={styles.generatedPassword}>{password}</Text>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.copyButton} onPress={handleCopyPassword}>
+              <Text style={styles.copyButtonText}>Copy Password</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.regenerateButton} onPress={generatePassword}>
+              <Text style={styles.regenerateButtonText}>Regenerate Password</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : null}
     </View>
   );
 }
@@ -88,5 +106,29 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+  },
+  copyButton: {
+    backgroundColor: '#5cb85c',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+    marginRight: 10,
+  },
+  copyButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  regenerateButton: {
+    backgroundColor: '#f0ad4e',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginTop: 10,
+    marginLeft: 10,
+  },
+  regenerateButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
   },
 });
